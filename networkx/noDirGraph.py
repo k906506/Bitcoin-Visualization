@@ -1,7 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 
-noDirGraph = nx.Graph() # 무방향 그래프
+noDirGraph = nx.Graph() # 무방향
 
 n, m = map(int, input().split()) # 노드 개수, 엣지 개수 입력
 
