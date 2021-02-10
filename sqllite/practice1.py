@@ -8,6 +8,6 @@ cur.execute("SELECT * FROM STUDENT") # SELECT 쿼리문 실행
 
 rows = cur.fetchall() # 결과를 rows에 저장
 for row in rows:
-    print(row) # 출력
+    print("학번 : %s, 이름 : %s, 나이 : %d" %(row[0], row[1], row[2]))
 
 conn.close() # 연결 해제
