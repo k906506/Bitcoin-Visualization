@@ -8,13 +8,13 @@ conn = sqlite3.connect("dbv3-core.db") # dbv3-core.db.와 연결
 cur = conn.cursor() # 커서 생성
 
 cur.execute("SELECT * FROM BlkTx") # SELECT 쿼리문 실행
-blkToTx = cur.fetchall() # 결과를 blkToTx에 저장, blkToTx에는 블록과 트랜잭션 인덱스 사이의 관계가 저장되어있음.
+blkToTx = cur.fetchall() # 결과를 blkToTx에 저장, blkToTx에는 blk와 tx 인덱스 관계가 저장.
 
 cur.execute("SELECT * FROM txIn") # SELECT 쿼리문 실행
-txInInfo = cur.fetchall() # 결과를 txIn에 저장, txIn에는 tx, n, ptx, pn 순으로 저장.
+txInInfo = cur.fetchall() # 결과를 txInInfo에 저장, txInInfo에는 tx, n, ptx, pn 순으로 저장.
 
 cur.execute("SELECT * FROM txOut") # SELECT 쿼리문 실행
-txOutInfo = cur.fetchall() # 결과를 txOut에 저장, txOut에는 tx, n, addr, btc 순으로 저장.
+txOutInfo = cur.fetchall() # 결과를 txOutInfo에 저장, txOutInfo에는 tx, n, addr, btc 순으로 저장.
 
 index_info = {} # blk와 tx 인덱스 관계, address index, input, output을 저장할 dict형 변수
 
