@@ -32,8 +32,6 @@ for row in clusterInfo:
 # addr -> cluster 방향성을 지닌 그래프 생성
 for element in node:
     dirGraph.add_node("Cluster " + str(node[element][0]))
-    for addr in node[element][1]:
-        dirGraph.add_node("Addr " + str(addr))
 
 for element in node:
     for addr in node[element][1]:
