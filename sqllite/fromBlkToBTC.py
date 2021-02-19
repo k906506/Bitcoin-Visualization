@@ -35,10 +35,10 @@ for row in blkTxInfo:
 # 2.
 
 cur.execute("SELECT * FROM TxOut LIMIT %d OFFSET %d" %(cnt, offset)) # SELECT 쿼리문 실행
-txOutInfo = cur.fetchall() # 결과를 txOutInfo에 저장, clusterInfo에는 tx와 addr, btc 관계가 저장.
+txOutInfo = cur.fetchall() # 결과를 txOutInfo에 저장, txOutInfo에는 transaction과 addr, btc 관계가 저장.
 
-# 특정 tk와 이와 관련된 addr, btc, 거래 개수가 dict형 변수에 저장.
-# node_txOut[tk number] = [tk number, [addr, btc], 거래 개수]
+# 특정 transaction과 이와 관련된 addr, btc, 거래 개수가 dict형 변수에 저장.
+# node_txOut[transaction number] = [transaction number, [addr, btc], 거래 개수]
 visit = {}
 node_txOut = {}
 
@@ -47,10 +47,10 @@ for row in txOutInfo:
 
 for row in txOutInfo:
     if visit[row[0]] == False: 
-        node_txOut[row[0]] = [row[0], [], 0] # cluster 별로 cluster와 addr 저장.
+        node_txOut[row[0]] = [row[0], [], 0]
         visit[row[0]] = True 
-    node_txOut[row[0]][1].append([row[2], row[3]]) # tx 저장.
-    node_txOut[row[0]][2] = row[1] + 1 # tx의 addr 개수 저장
+    node_txOut[row[0]][1].append([row[2], row[3]])
+    node_txOut[row[0]][2] = row[1] + 1 # transaction의 addr 개수 저장
 
 ####################################################################################################################
 # 3. 1, 2가 종료되면 node_blkTx에는  block과 transaction의 관계, node_txOut에는 transaction과 addr, btc, 거래 개수 관계가 저장.
@@ -78,6 +78,7 @@ for i in range(a, b):
     
     # 아래 코드는 Block - Transaction 그래프를 출력하기 위한 코드이지만 지금처럼 index를 입력받은 경우에 dbv3.service.db, dbv3.core.db에서 해당 index의 결과가 달라서
     # 내가 원하는 모양인 Block - Transaction - Addr - BTC를 출력할 수 없다.
+    
     ''' 
     if i == 1:
         for element in node_blkTx:
