@@ -76,10 +76,9 @@ for i in range(a, b):
         curNode = "Addr "
         nextNode = " BTC"
     
-    # 아래 코드는 Block - Transaction 그래프를 출력하기 위한 코드이지만 지금처럼 index를 입력받은 경우에 dbv3.service.db, dbv3.core.db에서 해당 index의 결과가 달라서
-    # 내가 원하는 모양인 Block - Transaction - Addr - BTC를 출력할 수 없다.
-    
-    ''' 
+    '''
+    아래 코드는 Block - Transaction 그래프를 출력하기 위한 코드이지만 현재 LIMIT, OFFSET으로 입력 받고 있어서 서로 다른 그래프가 생성.
+    테이블에 따라 해당 인덱스 위치의 정보가 서로 달라서 발생하는 문제.
     if i == 1:
         for element in node_blkTx:
             for addr in node_blkTx[element][1]:
