@@ -71,6 +71,23 @@ else: # 오류
 # 3.
 
 pos = nx.spring_layout(dirGraph)
+
+'''
+def fruchterman_reingold_layout(
+    G,
+    k= 200, None에서 200으로 수정
+    pos=None,
+    fixed=None,
+    iterations=50,
+    threshold=1e-4,
+    weight="weight",
+    scale=1,
+    center=None,
+    dim=2,
+    seed=None,
+):
+'''
+
 nx.draw(dirGraph, pos = pos, with_labels = True)
 labels = nx.get_edge_attributes(dirGraph, 'weight')
 nx.draw_networkx_edge_labels(dirGraph, pos, edge_labels = labels)
