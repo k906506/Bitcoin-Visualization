@@ -1,0 +1,123 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.css" type="text/css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis-network.min.js"> </script>
+<center>
+<h1>None</h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+
+<style type="text/css">
+
+        #mynetwork {
+            width: 100%;
+            height: 750px;
+            background-color: #ffffff;
+            border: 1px solid lightgray;
+            position: relative;
+            float: left;
+        }
+
+        
+
+        
+        #config {
+            float: left;
+            width: 400px;
+            height: 600px;
+        }
+        
+
+        
+</style>
+
+</head>
+
+<body>
+<div id = "mynetwork"></div>
+
+
+<div id = "config"></div>
+
+<script type="text/javascript">
+
+    // initialize global variables.
+    var edges;
+    var nodes;
+    var network; 
+    var container;
+    var options, data;
+
+    
+    // This method is responsible for drawing the graph, returns the drawn network
+    function drawGraph() {
+        var container = document.getElementById('mynetwork');
+        
+        
+
+        // parsing and collecting nodes and edges from the python
+        nodes = new vis.DataSet([{"id": "309513710", "label": "309513710", "shape": "dot", "title": "309513710"}, {"id": "309534386", "label": "309534386", "shape": "dot", "title": "309534386"}, {"id": "309539711", "label": "309539711", "shape": "dot", "title": "309539711"}, {"id": "309548782", "label": "309548782", "shape": "dot", "title": "309548782"}, {"id": "309598159", "label": "309598159", "shape": "dot", "title": "309598159"}, {"id": "309613501", "label": "309613501", "shape": "dot", "title": "309613501"}, {"id": "309631625", "label": "309631625", "shape": "dot", "title": "309631625"}, {"id": "309710737", "label": "309710737", "shape": "dot", "title": "309710737"}, {"id": "309713576", "label": "309713576", "shape": "dot", "title": "309713576"}, {"id": "309728217", "label": "309728217", "shape": "dot", "title": "309728217"}, {"id": "309739323", "label": "309739323", "shape": "dot", "title": "309739323"}, {"id": "309742890", "label": "309742890", "shape": "dot", "title": "309742890"}, {"id": "309768108", "label": "309768108", "shape": "dot", "title": "309768108"}, {"id": "309768381", "label": "309768381", "shape": "dot", "title": "309768381"}, {"id": "309775389", "label": "309775389", "shape": "dot", "title": "309775389"}, {"id": "309825771", "label": "309825771", "shape": "dot", "title": "309825771"}, {"id": "309828901", "label": "309828901", "shape": "dot", "title": "309828901"}, {"id": "309910564", "label": "309910564", "shape": "dot", "title": "309910564"}, {"id": "309911535", "label": "309911535", "shape": "dot", "title": "309911535"}, {"id": "309913858", "label": "309913858", "shape": "dot", "title": "309913858"}, {"id": "309915849", "label": "309915849", "shape": "dot", "title": "309915849"}, {"id": "309932436", "label": "309932436", "shape": "dot", "title": "309932436"}, {"id": "309944928", "label": "309944928", "shape": "dot", "title": "309944928"}, {"id": "310148053", "label": "310148053", "shape": "dot", "title": "310148053"}, {"id": "310154960", "label": "310154960", "shape": "dot", "title": "310154960"}, {"id": "310196870", "label": "310196870", "shape": "dot", "title": "310196870"}, {"id": "310201734", "label": "310201734", "shape": "dot", "title": "310201734"}, {"id": "310206848", "label": "310206848", "shape": "dot", "title": "310206848"}, {"id": "310230523", "label": "310230523", "shape": "dot", "title": "310230523"}, {"id": "310233228", "label": "310233228", "shape": "dot", "title": "310233228"}, {"id": "310235069", "label": "310235069", "shape": "dot", "title": "310235069"}, {"id": "310258510", "label": "310258510", "shape": "dot", "title": "310258510"}, {"id": "310316739", "label": "310316739", "shape": "dot", "title": "310316739"}, {"id": "310465287", "label": "310465287", "shape": "dot", "title": "310465287"}, {"id": "310508039", "label": "310508039", "shape": "dot", "title": "310508039"}, {"id": "310573263", "label": "310573263", "shape": "dot", "title": "310573263"}, {"id": "310614695", "label": "310614695", "shape": "dot", "title": "310614695"}, {"id": "310906094", "label": "310906094", "shape": "dot", "title": "310906094"}, {"id": "310927003", "label": "310927003", "shape": "dot", "title": "310927003"}, {"id": "311053028", "label": "311053028", "shape": "dot", "title": "311053028"}, {"id": "311382677", "label": "311382677", "shape": "dot", "title": "311382677"}, {"id": "311585543", "label": "311585543", "shape": "dot", "title": "311585543"}, {"id": "311661059", "label": "311661059", "shape": "dot", "title": "311661059"}, {"id": "311929686", "label": "311929686", "shape": "dot", "title": "311929686"}, {"id": "312009730", "label": "312009730", "shape": "dot", "title": "312009730"}, {"id": "313999479", "label": "313999479", "shape": "dot", "title": "313999479"}, {"id": "314662875", "label": "314662875", "shape": "dot", "title": "314662875"}, {"id": "315501131", "label": "315501131", "shape": "dot", "title": "315501131"}, {"id": "315539126", "label": "315539126", "shape": "dot", "title": "315539126"}, {"id": "315545348", "label": "315545348", "shape": "dot", "title": "315545348"}, {"id": "315927778", "label": "315927778", "shape": "dot", "title": "315927778"}, {"id": "315976992", "label": "315976992", "shape": "dot", "title": "315976992"}, {"id": "316404689", "label": "316404689", "shape": "dot", "title": "316404689"}, {"id": "317726497", "label": "317726497", "shape": "dot", "title": "317726497"}, {"id": "317729265", "label": "317729265", "shape": "dot", "title": "317729265"}, {"id": "317753269", "label": "317753269", "shape": "dot", "title": "317753269"}, {"id": "317769869", "label": "317769869", "shape": "dot", "title": "317769869"}, {"id": "317793832", "label": "317793832", "shape": "dot", "title": "317793832"}, {"id": "318000971", "label": "318000971", "shape": "dot", "title": "318000971"}, {"id": "318007075", "label": "318007075", "shape": "dot", "title": "318007075"}, {"id": "318053861", "label": "318053861", "shape": "dot", "title": "318053861"}, {"id": "318103781", "label": "318103781", "shape": "dot", "title": "318103781"}, {"id": "318255223", "label": "318255223", "shape": "dot", "title": "318255223"}, {"id": "318265559", "label": "318265559", "shape": "dot", "title": "318265559"}, {"id": "318445108", "label": "318445108", "shape": "dot", "title": "318445108"}, {"id": "318459665", "label": "318459665", "shape": "dot", "title": "318459665"}, {"id": "318559949", "label": "318559949", "shape": "dot", "title": "318559949"}, {"id": "319535334", "label": "319535334", "shape": "dot", "title": "319535334"}, {"id": "319545275", "label": "319545275", "shape": "dot", "title": "319545275"}, {"id": "319548427", "label": "319548427", "shape": "dot", "title": "319548427"}, {"id": "319550040", "label": "319550040", "shape": "dot", "title": "319550040"}, {"id": "319550054", "label": "319550054", "shape": "dot", "title": "319550054"}, {"id": "319558697", "label": "319558697", "shape": "dot", "title": "319558697"}, {"id": "319576317", "label": "319576317", "shape": "dot", "title": "319576317"}, {"id": "319668944", "label": "319668944", "shape": "dot", "title": "319668944"}, {"id": "320235356", "label": "320235356", "shape": "dot", "title": "320235356"}, {"id": "320474274", "label": "320474274", "shape": "dot", "title": "320474274"}, {"id": "320553961", "label": "320553961", "shape": "dot", "title": "320553961"}, {"id": "320566142", "label": "320566142", "shape": "dot", "title": "320566142"}, {"id": "320704736", "label": "320704736", "shape": "dot", "title": "320704736"}, {"id": "320711499", "label": "320711499", "shape": "dot", "title": "320711499"}, {"id": "321216560", "label": "321216560", "shape": "dot", "title": "321216560"}, {"id": "321268462", "label": "321268462", "shape": "dot", "title": "321268462"}, {"id": "321279576", "label": "321279576", "shape": "dot", "title": "321279576"}, {"id": "321302063", "label": "321302063", "shape": "dot", "title": "321302063"}, {"id": "321302131", "label": "321302131", "shape": "dot", "title": "321302131"}, {"id": "321305440", "label": "321305440", "shape": "dot", "title": "321305440"}, {"id": "321308356", "label": "321308356", "shape": "dot", "title": "321308356"}, {"id": "321311493", "label": "321311493", "shape": "dot", "title": "321311493"}, {"id": "321311554", "label": "321311554", "shape": "dot", "title": "321311554"}, {"id": "321314627", "label": "321314627", "shape": "dot", "title": "321314627"}, {"id": "321314629", "label": "321314629", "shape": "dot", "title": "321314629"}, {"id": "321315474", "label": "321315474", "shape": "dot", "title": "321315474"}, {"id": "321315535", "label": "321315535", "shape": "dot", "title": "321315535"}, {"id": "321316001", "label": "321316001", "shape": "dot", "title": "321316001"}, {"id": "321317914", "label": "321317914", "shape": "dot", "title": "321317914"}, {"id": "321321835", "label": "321321835", "shape": "dot", "title": "321321835"}, {"id": "321322314", "label": "321322314", "shape": "dot", "title": "321322314"}, {"id": "321340034", "label": "321340034", "shape": "dot", "title": "321340034"}, {"id": "321343638", "label": "321343638", "shape": "dot", "title": "321343638"}]);
+        edges = new vis.DataSet([{"from": "309513710", "to": "309513710", "value": "942"}, {"from": "309513710", "to": "309534386", "value": "942"}, {"from": "309513710", "to": "309539711", "value": "942"}, {"from": "309513710", "to": "309548782", "value": "942"}, {"from": "309513710", "to": "309598159", "value": "942"}, {"from": "309513710", "to": "309613501", "value": "942"}, {"from": "309513710", "to": "309631625", "value": "942"}, {"from": "309513710", "to": "309710737", "value": "942"}, {"from": "309513710", "to": "309713576", "value": "942"}, {"from": "309513710", "to": "309728217", "value": "942"}, {"from": "309513710", "to": "309739323", "value": "942"}, {"from": "309513710", "to": "309742890", "value": "942"}, {"from": "309513710", "to": "309768108", "value": "942"}, {"from": "309513710", "to": "309768381", "value": "942"}, {"from": "309513710", "to": "309775389", "value": "942"}, {"from": "309513710", "to": "309825771", "value": "942"}, {"from": "309513710", "to": "309828901", "value": "942"}, {"from": "309513710", "to": "309910564", "value": "942"}, {"from": "309513710", "to": "309911535", "value": "942"}, {"from": "309513710", "to": "309913858", "value": "942"}, {"from": "309513710", "to": "309915849", "value": "942"}, {"from": "309513710", "to": "309932436", "value": "942"}, {"from": "309513710", "to": "309944928", "value": "942"}, {"from": "309513710", "to": "310148053", "value": "942"}, {"from": "309513710", "to": "310154960", "value": "942"}, {"from": "309513710", "to": "310196870", "value": "942"}, {"from": "309513710", "to": "310201734", "value": "942"}, {"from": "309513710", "to": "310206848", "value": "942"}, {"from": "309513710", "to": "310230523", "value": "942"}, {"from": "309513710", "to": "310233228", "value": "942"}, {"from": "309513710", "to": "310235069", "value": "942"}, {"from": "309513710", "to": "310258510", "value": "942"}, {"from": "309513710", "to": "310316739", "value": "942"}, {"from": "309513710", "to": "310465287", "value": "942"}, {"from": "309513710", "to": "310508039", "value": "942"}, {"from": "309513710", "to": "310573263", "value": "942"}, {"from": "309513710", "to": "310614695", "value": "942"}, {"from": "309513710", "to": "310906094", "value": "942"}, {"from": "309513710", "to": "310927003", "value": "942"}, {"from": "309513710", "to": "311053028", "value": "942"}, {"from": "309513710", "to": "311382677", "value": "942"}, {"from": "309513710", "to": "311585543", "value": "942"}, {"from": "309513710", "to": "311661059", "value": "942"}, {"from": "309513710", "to": "311929686", "value": "942"}, {"from": "309513710", "to": "312009730", "value": "942"}, {"from": "309513710", "to": "313999479", "value": "942"}, {"from": "309513710", "to": "314662875", "value": "942"}, {"from": "309513710", "to": "315501131", "value": "942"}, {"from": "309513710", "to": "315539126", "value": "942"}, {"from": "309513710", "to": "315545348", "value": "942"}, {"from": "309513710", "to": "315927778", "value": "942"}, {"from": "309513710", "to": "315976992", "value": "942"}, {"from": "309513710", "to": "316404689", "value": "942"}, {"from": "309513710", "to": "317726497", "value": "942"}, {"from": "309513710", "to": "317729265", "value": "942"}, {"from": "309513710", "to": "317753269", "value": "942"}, {"from": "309513710", "to": "317769869", "value": "942"}, {"from": "309513710", "to": "317793832", "value": "942"}, {"from": "309513710", "to": "318000971", "value": "942"}, {"from": "309513710", "to": "318007075", "value": "942"}, {"from": "309513710", "to": "318053861", "value": "942"}, {"from": "309513710", "to": "318103781", "value": "942"}, {"from": "309513710", "to": "318255223", "value": "942"}, {"from": "309513710", "to": "318265559", "value": "942"}, {"from": "309513710", "to": "318445108", "value": "942"}, {"from": "309513710", "to": "318459665", "value": "942"}, {"from": "309513710", "to": "318559949", "value": "942"}, {"from": "309513710", "to": "319535334", "value": "942"}, {"from": "309513710", "to": "319545275", "value": "942"}, {"from": "309513710", "to": "319548427", "value": "942"}, {"from": "309513710", "to": "319550040", "value": "942"}, {"from": "309513710", "to": "319550054", "value": "942"}, {"from": "309513710", "to": "319558697", "value": "942"}, {"from": "309513710", "to": "319576317", "value": "942"}, {"from": "309513710", "to": "319668944", "value": "942"}, {"from": "309513710", "to": "320235356", "value": "942"}, {"from": "309513710", "to": "320474274", "value": "942"}, {"from": "309513710", "to": "320553961", "value": "942"}, {"from": "309513710", "to": "320566142", "value": "942"}, {"from": "309513710", "to": "320704736", "value": "942"}, {"from": "309513710", "to": "320711499", "value": "942"}, {"from": "309513710", "to": "321216560", "value": "942"}, {"from": "309513710", "to": "321268462", "value": "942"}, {"from": "309513710", "to": "321279576", "value": "942"}, {"from": "309513710", "to": "321302063", "value": "942"}, {"from": "309513710", "to": "321302131", "value": "942"}, {"from": "309513710", "to": "321305440", "value": "942"}, {"from": "309513710", "to": "321308356", "value": "942"}, {"from": "309513710", "to": "321311493", "value": "942"}, {"from": "309513710", "to": "321311554", "value": "942"}, {"from": "309513710", "to": "321314627", "value": "942"}, {"from": "309513710", "to": "321314629", "value": "942"}, {"from": "309513710", "to": "321315474", "value": "942"}, {"from": "309513710", "to": "321315535", "value": "942"}, {"from": "309513710", "to": "321316001", "value": "942"}, {"from": "309513710", "to": "321317914", "value": "942"}, {"from": "309513710", "to": "321321835", "value": "942"}, {"from": "309513710", "to": "321322314", "value": "942"}, {"from": "309513710", "to": "321340034", "value": "942"}, {"from": "309513710", "to": "321343638", "value": "942"}]);
+
+        // adding nodes and edges to the graph
+        data = {nodes: nodes, edges: edges};
+
+        var options = {
+    "configure": {
+        "enabled": true,
+        "filter": [
+            "physics"
+        ]
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": false,
+            "type": "continuous"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+        
+        
+
+        
+        // if this network requires displaying the configure window,
+        // put it in its div
+        options.configure["container"] = document.getElementById("config");
+        
+
+        network = new vis.Network(container, data, options);
+
+        
+
+
+        
+
+        return network;
+
+    }
+
+    drawGraph();
+
+</script>
+</body>
+</html>
