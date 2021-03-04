@@ -2,7 +2,7 @@ import sqlite3
 import networkx as nx
 import matplotlib.pyplot as plt
 
-def getTagId(userInput):
+def getTagId(userInput): # 입력 값에 따른 tagId 리턴
     if userInput == "업비트":
         return 942
     elif userInput == "빗썸":
@@ -12,25 +12,35 @@ def getTagId(userInput):
     else:
         return -1
 
-def getCluster(tagId):
-    cur.execute("SELECT * FROM Tag where Tag.tag = %d" %tagId)
+def getCluster(tagId): # tagId에 따른 cluster 리턴
+    cur.execute("SELECT Tag.addr FROM Tag where Tag.tag = %d" %tagId)
     clusterInfo = cur.fetchall()
     return clusterInfo
 
-def getAddr(cluster):
-    cur.execute("SELECT * FROM Cluster where Cluster.cluster = %d" %cluster)
+def getAddr(cluster): # cluster에 다른 addr 리턴
+    cur.execute("SELECT Cluster.addr FROM Cluster where Cluster.cluster = %d" %cluster)
     addrInfo = cur.fetchall()
     return addrInfo
 
-def getTx(address):
-    cur.execute("SELECT * FROM TxOut where Txout.addr = %d order by n desc" %address)
+def getTx(address): # addr에 따른 tx 리턴
+    cur.execute("SELECT TxOut.tx FROM TxOut where Txout.addr = %d" %address)
     txInfo = cur.fetchall()
     return txInfo
 
-def getCntTxAddrBTC(address): # 특정 주소의 주소의 총 사용량과 거래 금액 리턴
-    cur.execute("SELECT TxOut.tx, count(TxIn.n),TxOut.btc From TxIn INNER JOIN TxOut On TxIn.pn = TxOut.n and TxIn.ptx = TxOut.tx where TxOut.addr = %d" %address)
+def getCntTxSrt(tx): # 거래소 A의 tx의 총 주소 개수 리턴
+    cur.execute("SELECT TxIn.ptx, count(TxIn.ptx) FROM TxIn where TxIn.ptx = %d" %tx)
     cntInfo = cur.fetchall()
     return cntInfo
+
+def getCntTxDst(tx): # 거래소 B의 tx의 총 주소 개수 리턴
+    cur.execute("SELECT TxOut.tx, count(TxOut.tx) FROM TxOut where TxOut.tx = %d" %tx)
+    cntInfo = cur.fetchall()
+    return cntInfo
+
+def getSrtToDst(txSrt, txDst): # 트랜잭션 간의 거래를 거래 금액 내림차순으로 리턴
+    cur.execute("SELECT TxOut.btc FROM TxIn, TxOut where TxIn.ptx = %d and TxOut.tx = %d order by btc desc" %(txSrt, txDst))
+    srtToDstInfo = cur.fetchall()
+    return srtToDstInfo
 
 def main():
     conn = sqlite3.connect("dbv3-service.db")
@@ -46,10 +56,10 @@ def main():
     sumAddrInfoSrt = []
     sumAddrInfoDst = []
     for cluster in clusterInfoSrt:
-        addrInfo = getAddr(cluster[0])
+        addrInfo = getAddr(cluster)
         sumAddrInfoSrt.extend(addrInfo)
     for cluster in clusterInfoDst:
-        addrInfo = getAddr(cluster[0])
+        addrInfo = getAddr(cluster)
         sumAddrInfoDst.extend(addrInfo)
 
     #####################################################################################################
@@ -62,8 +72,17 @@ def main():
     conn = sqlite3.connect("dbv3-core.db")
     cur = conn.cursor()
 
+    sumTxInfoSrt = []
+    sumTxInfoDst = []
+    for addr in sumAddrInfoSrt:
+        txInfo = getTx(addr)
+        if txInfo not in sumTxInfoSrt:
+            sumTxInfoSrt.extend(txInfo)
+    for addr in sumAddrInfoDst:
+        txInfo = getTx(addr)
+        if txInfo not in sumTxInfoDst:
+            sumTxInfoDst.extend(txInfo)
 
-
-    
-
-
+    #####################################################################################################
+    # 2. 거래소 A의 트랜잭션, 거래소 B의 트랜잭션을 주소 개수별로 저장하고 큰 트랜잭션부터 이용 (해결해야함ㅁㄴㅇㄹㄴㅇㄹ) #
+    #####################################################################################################
