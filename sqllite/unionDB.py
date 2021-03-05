@@ -37,10 +37,15 @@ def getCntTxDst(tx): # 거래소 B의 tx의 총 주소 개수 리턴
     cntInfo = cur.fetchall()
     return cntInfo
 
-def getSrtToDst(txSrt, txDst): # 트랜잭션 간의 거래를 거래 금액 내림차순으로 리턴
-    cur.execute("SELECT TxOut.btc FROM TxIn, TxOut where TxIn.ptx = %d and TxOut.tx = %d order by btc desc" %(txSrt, txDst))
+def getSrtToDst(txSrt, txDst): # 트랜잭션 간의 거래에서 트랜잭션당 주소 개수 리턴
+    cur.execute("SELECT TxIn.ptx, TxOut.tx, count(TxOut.addr) FROM TxIn, TxOut where TxIn.ptx = %d and TxOut.tx = %d" %(txSrt, txDst))
     srtToDstInfo = cur.fetchall()
     return srtToDstInfo
+
+def getDstAddr(tx): # 거래소 B의 트랜잭션당 주소를 거래금액의 내림차순으로 리턴
+    cur.execute("SELECT TxOut.addr, TxOut.btc FROM TxOut where TxOut.tx = %d order by btc desc" %tx)
+    dstAddrInfo = cur.fetchall()
+    return dstAddrInfo
 
 def main():
     conn = sqlite3.connect("dbv3-service.db")
@@ -83,6 +88,17 @@ def main():
         if txInfo not in sumTxInfoDst:
             sumTxInfoDst.extend(txInfo)
 
-    #####################################################################################################
-    # 2. 거래소 A의 트랜잭션, 거래소 B의 트랜잭션을 주소 개수별로 저장하고 큰 트랜잭션부터 이용 (해결해야함ㅁㄴㅇㄹㄴㅇㄹ) #
-    #####################################################################################################
+    sumTxInfoSrt = sorted(sumTxInfoSrt, key = lambda x : -x[1])
+    sumTxInfoDrt = sorted(sumTxInfoDrt, key = lambda x : -x[1])
+
+    sumSrtToDstInfo = []
+    for txSrt in sumAddrInfoSrt:
+        for txDst in sumAddrInfoDst:
+            srtToDstInfo = getSrtToDst(txSrt[0], txDst[0])
+            sumSrtToDstInfo.extend(srtToDstInfo)
+
+    sumSrtToDstInfo = sorted(sumSrtToDstInfo, key = lambda x : -x[2])
+
+    ###################################################################################################
+    # 2. 위 과정이 종료되면 거래소 A의 트랜잭션, 거래소 B의 트랜잭션을 트랜잭션당 주소 개수가 많은 순으로 내림차순으로 정렬. #
+    ###################################################################################################
