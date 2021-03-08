@@ -23,13 +23,13 @@ def getAddr(cluster): # cluster에 다른 addr 리턴
     return addrInfo
 
 def getTx(address): # addr에 따른 tx 리턴
-    cur.execute("SELECT TxOut.tx FROM TxOut where Txout.addr = %d" %address)
-    txInfo = cur.fetchall()
-    return txInfo
+    cur.execute("SELECT TxOut.tx FROM TxOut where TxOut.addr = %d" %address)
+    txInfo = cur.fetchone()
+    return txInfo[0]
 
 def getCntTxSrt(tx): # 거래소 A의 tx의 총 주소 개수 리턴
-    cur.execute("SELECT TxIn.ptx, count(TxIn.ptx) FROM TxIn where TxIn.ptx = %d" %tx)
-    cntInfo = cur.fetchall()
+    cur.execute("SELECT TxIn.ptx FROM TxIn where TxIn.ptx = %d" %tx)
+    cntInfo = cur.fetchone()
     return cntInfo
 
 def getCntTxDst(tx): # 거래소 B의 tx의 총 주소 개수 리턴
@@ -51,54 +51,86 @@ def main():
     conn = sqlite3.connect("dbv3-service.db")
     cur = conn.cursor()
 
-    userInputSrt = input().rstrip()
-    userInputDst = input().rstrip()
-    tagIdSrt = getTagId(userInputSrt)
-    tagIdDst = getTagId(userInputDst)
-    clusterInfoSrt = getCluster(tagIdSrt)
-    clusterInfoDst = getCluster(tagIdDst)
+    print("거래소 A를 입력해주세요.")
+    userInputSrt = getTagId(input().rstrip())
+
+    print("거래소 B를 입력해주세요.")
+    userInputDst = getTagId(input().rstrip())
+
+    print("첫번째 과정을 진행합니다.")
+
+    cur.execute("SELECT Tag.addr FROM Tag where Tag.tag = %d" %userInputSrt)
+    tagIdSrt = cur.fetchone()[0]
+
+    cur.execute("SELECT Tag.addr FROM Tag where Tag.tag = %d" %userInputDst)
+    tagIdDst = cur.fetchone()[0]
+
+    cur.execute("SELECT Cluster.addr FROM Cluster where Cluster.cluster = %d" %tagIdSrt)
+    clusterInfoSrt = cur.fetchall()
+
+    cur.execute("SELECT Cluster.addr FROM Cluster where Cluster.cluster = %d" %tagIdDst)
+    clusterInfoDst = cur.fetchall()
     
     sumAddrInfoSrt = []
     sumAddrInfoDst = []
     for cluster in clusterInfoSrt:
-        addrInfo = getAddr(cluster)
+        cur.execute("SELECT Cluster.addr FROM Cluster where Cluster.cluster = %d" %cluster)
+        addrInfo = cur.fetchall()
         sumAddrInfoSrt.extend(addrInfo)
     for cluster in clusterInfoDst:
-        addrInfo = getAddr(cluster)
+        cur.execute("SELECT Cluster.addr FROM Cluster where Cluster.cluster = %d" %cluster)
+        addrInfo = cur.fetchall()
         sumAddrInfoDst.extend(addrInfo)
-
-    #####################################################################################################
-    # 1. 위 과정이 종료되면 sumAddrInfoSrt에는 거래소 A의 모든 주소가, sumAddrInfoDst에는 거래소 B의 모든 주소가 저장. #
-    #####################################################################################################
+    
+    print(sumAddrInfoDst)
 
     cur.close()
     conn.close()
 
+    print("거래소 A와 거래소 B의 모든 주소가 검색되었습니다.")
+
+    print(input())
+    ####################################################################################################
+    #1. 위 과정이 종료되면 sumAddrInfoSrt에는 거래소 A의 모든 주소가, sumAddrInfoDst에는 거래소 B의 모든 주소가 저장. #
+    ####################################################################################################
+
+    print("두번째 과정을 진행합니다.")
+
     conn = sqlite3.connect("dbv3-core.db")
     cur = conn.cursor()
 
-    sumTxInfoSrt = []
-    sumTxInfoDst = []
+    txInfoSrt = []
+    txInfoDst = []
+    sumTxInfoSrt = {}
+    sumTxInfoDst = {}
     for addr in sumAddrInfoSrt:
-        txInfo = getTx(addr)
-        if txInfo not in sumTxInfoSrt:
-            sumTxInfoSrt.extend(txInfo)
+        cur.execute("SELECT TxOut.tx FROM TxOut where TxOut.addr = %d" %addr)
+        try:
+            txInfo = cur.fetchone()[0]
+        except:
+            continue
+        if txInfo not in txInfoSrt:
+            sumTxInfoSrt[txInfo] = 0
+            txInfoSrt.append(txInfo)
+        else:
+            sumTxInfoSrt[txInfo] += 1
+        print(addr)
+        print("")
     for addr in sumAddrInfoDst:
-        txInfo = getTx(addr)
-        if txInfo not in sumTxInfoDst:
-            sumTxInfoDst.extend(txInfo)
+        cur.execute("SELECT TxOut.tx FROM TxOut where TxOut.addr = %d" %addr)
+        try:
+            txInfo = cur.fetchone()[0]
+        except:
+            continue
+        if txInfo not in txInfoDst:
+            sumTxInfoDst[txInfo] = 0
+            txInfoDst.append(txInfo)
+        else:
+            sumTxInfoDst[txInfo] += 1
+    
+    print("트랜잭션 탐색을 완료하셨습니다.")
+    listSumTxInfoSrt = sorted(sumTxInfoSrt.items(), reverse=True)
+    print(listSumTxInfoSrt)
 
-    sumTxInfoSrt = sorted(sumTxInfoSrt, key = lambda x : -x[1])
-    sumTxInfoDrt = sorted(sumTxInfoDrt, key = lambda x : -x[1])
-
-    sumSrtToDstInfo = []
-    for txSrt in sumAddrInfoSrt:
-        for txDst in sumAddrInfoDst:
-            srtToDstInfo = getSrtToDst(txSrt[0], txDst[0])
-            sumSrtToDstInfo.extend(srtToDstInfo)
-
-    sumSrtToDstInfo = sorted(sumSrtToDstInfo, key = lambda x : -x[2])
-
-    ###################################################################################################
-    # 2. 위 과정이 종료되면 거래소 A의 트랜잭션, 거래소 B의 트랜잭션을 트랜잭션당 주소 개수가 많은 순으로 내림차순으로 정렬. #
-    ###################################################################################################
+if __name__ == "__main__":
+    main()
