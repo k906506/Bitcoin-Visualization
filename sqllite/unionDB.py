@@ -1,6 +1,4 @@
 import sqlite3
-import networkx as nx
-import matplotlib.pyplot as plt
 
 def getTagId(userInput): # 입력 값에 따른 tagId 리턴
     if userInput == "업비트":
@@ -115,8 +113,8 @@ def main():
     txInfoSrt = {}
     txInfoDst = {}
 
-    for addr in sumAddrInfoSrt:
-        cur.execute("SELECT TxOut.tx FROM TxOut where TxOut.addr = %d" %addr[0])
+    for addr in sumAddrInfoSrt: # 거래소 A의 모든 트랜잭션 저장
+        cur.execute("SELECT TxOut.tx FROM TxOut INNER JOIN TxIn on TxOut.tx = TxIn.ptx where TxOut.addr = %d" %addr[0])
         try:
             txInfo = cur.fetchone()[0]
         except:
@@ -129,7 +127,7 @@ def main():
     print("[%s]의 총 %s개의 트랜잭션이 검색되었습니다." %(srt, len(txInfoSrt)))
 
     for addr in sumAddrInfoDst:
-        cur.execute("SELECT TxOut.tx FROM TxOut where TxOut.addr = %d" %addr[0])
+        cur.execute("SELECT TxOut.tx FROM TxOut INNER JOIN TxIn on TxOut.tx = TxIn.tx where TxOut.addr = %d" %addr[0])
         try:
             txInfo = cur.fetchone()[0]
         except:
@@ -140,6 +138,53 @@ def main():
         txInfoDst[txInfo].append(addr[0]) 
 
     print("[%s]의 총 %s개의 트랜잭션이 검색되었습니다." %(dst, len(txInfoDst)))
+
+    sortTxInfoSrt = sorted(txInfoSrt.items(), key = lambda x : len(x[1]), reverse = True)
+    sortTxInfoDst = sorted(txInfoDst.items(), key = lambda x : len(x[1]), reverse = True)
+
+    print("")
+    print("주소의 개수가 1개인 트랜잭션을 검색합니다.")
+
+    indexSrt = 0
+    indexDst = 0
+
+    for txSrt in sortTxInfoSrt:
+        if len(txSrt[1]) == 1:
+            break
+        indexSrt += 1
+
+    for txDst in sortTxInfoDst:
+        if len(txDst[1]) == 1:
+            break
+        indexDst += 1
+    
+    print("주소의 개수가 1개인 트랜잭션을 제외합니다.")
+    
+    newSortTxInfoSrt = []
+    newSortTxInfoDst = []
+    newSortTxInfoSrt.extend(sortTxInfoSrt[:indexSrt+1])
+    newSortTxInfoDst.extend(sortTxInfoDst[:indexDst+1])
+
+    txInfoSrtToDst = {}
+    visitSrtToDst = []
+
+    print("")
+    print("%s에서 %s로 이동한 트랜잭션을 검색합니다." %(srt, dst))
+    for txSrt in newSortTxInfoSrt:
+        for txDst in newSortTxInfoDst:
+            cur.execute("SELECT count(TxOut.addr) FROM TxOut INNER JOIN TxIn on TxOut.tx = TxIn.tx where TxIn.ptx = %d and TxIn.tx = %d" %(txSrt[0], txDst[0]))
+            try:
+                txInfo = cur.fetchone()[0]
+            except:
+                continue
+            if txSrt[0] not in visitSrtToDst:
+                txInfoSrtToDst[txSrt[0]] = []
+                visitSrtToDst.append(txSrt[0])
+            txInfoSrtToDst[txSrt[0]].append([txDst[0], txInfo])
+            print(txSrt[0], txDst[0], txInfo)
+    
+    print("")
+    print(txInfoSrtToDst)
 
 if __name__ == "__main__":
     main()
