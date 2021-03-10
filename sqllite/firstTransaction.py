@@ -88,7 +88,7 @@ def main():
     txInfoSrt = {}
     txInfoDst = {}
 
-    for addr in sumAddrInfoSrt: # 거래소 A(Out)의 모든 트랜잭션 저장
+    for addr in sumAddrInfoSrt:
         cur.execute("SELECT TxOut.tx FROM TxOut INNER JOIN TxIn on TxOut.tx = TxIn.ptx where TxOut.addr = %d" %addr[0])
         try:
             txInfo = cur.fetchone()[0]
@@ -101,7 +101,7 @@ def main():
 
     print("[%s]의 총 %s개의 트랜잭션이 검색되었습니다." %(srt, len(txInfoSrt)))
 
-    for addr in sumAddrInfoDst: # 거래소 B(In)의 모든 트랜잭션 저장
+    for addr in sumAddrInfoDst:
         cur.execute("SELECT TxOut.tx FROM TxOut INNER JOIN TxIn on TxOut.tx = TxIn.tx where TxOut.addr = %d" %addr[0])
         try:
             txInfo = cur.fetchone()[0]
@@ -116,6 +116,10 @@ def main():
 
     sortTxInfoSrt = sorted(txInfoSrt.items(), key = lambda x : len(x[1]), reverse = True)
     sortTxInfoDst = sorted(txInfoDst.items(), key = lambda x : len(x[1]), reverse = True)
+
+    #####################################################################################################
+    #2. 위 과정이 종료되면 txInfoSrt에는 거래소 A의 tx별 addr 주소가, txInfoDst에는 거래소 B의 tx별 addr 주소가 저장. #
+    #####################################################################################################
 
     print("")
     print("주소의 개수가 1개인 트랜잭션을 검색합니다.")
@@ -162,10 +166,14 @@ def main():
     
     print("총 %d개의 트랜잭션이 검색되었습니다." %len(txInfoSrtToDst))
 
-    txInfoSrtToDst = sorted(txInfoSrtToDst.items(), key = lambda x : (x[1][0][1], x[1][0][2]), reverse = True)
-
     print("")
     print("(1) 주소의 개수가 많고, (2) 거래 금액이 높은 트랜잭션부터 내림차순으로 정렬합니다.")
+
+    txInfoSrtToDst = sorted(txInfoSrtToDst.items(), key = lambda x : (x[1][0][1], x[1][0][2]), reverse = True)
+
+    ###############################################################################################
+    #3. 위 과정이 종료되면 txInfoSrtToDst에는 거래소 A -> 거래소 B의 tx가 주소 개수, 거래 금액 내림차순으로 정렬. #
+    ###############################################################################################
 
     index = 1
     for element in txInfoSrtToDst:
