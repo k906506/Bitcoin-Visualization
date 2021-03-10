@@ -1,4 +1,4 @@
-#firstTransaction.py INPUT, OUTPUT
+#firstTransaction.py INPUT, OUTPUT#
 
 ``` python
 거래소 A를 입력해주세요.
