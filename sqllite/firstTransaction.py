@@ -195,7 +195,7 @@ def main():
 
     index = 1
     for element in info:
-        print("[%3d] [TxOut] %9d [TxIn] %9d [addr] %9d [BTC] %10.10f" %(index, infoSrtToDst[0], infoSrtToDst[1][0][0], element[0], element[1]))
+        print("[%3d] [TxOut] %9d [TxIn] %9d [Addr] %9d [BTC] %10.10f" %(index, infoSrtToDst[0], infoSrtToDst[1][0][0], element[0], element[1]))
         index += 1
     
     firstDimGraph = Network(height="750px", width="100%")
