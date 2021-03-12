@@ -1,5 +1,7 @@
+from pyvis.network import Network
 import sqlite3
-import time
+import pandas as pd
+import networkx as nx
 
 def getTagId(userInput): # 입력 값에 따른 tagId 리턴
     if userInput == "업비트":
@@ -99,7 +101,7 @@ def main():
             visitSrt.append(txInfo)
         txInfoSrt[txInfo].append(addr[0])    
 
-    print("[%s]의 총 %s개의 트랜잭션이 검색되었습니다." %(srt, len(txInfoSrt)))
+    print("[%s] 총 %s개의 트랜잭션이 검색되었습니다." %(srt, len(txInfoSrt)))
 
     for addr in sumAddrInfoDst:
         cur.execute("SELECT TxOut.tx FROM TxOut INNER JOIN TxIn on TxOut.tx = TxIn.tx where TxOut.addr = %d" %addr[0])
@@ -112,7 +114,7 @@ def main():
             visitDst.append(txInfo)
         txInfoDst[txInfo].append(addr[0]) 
 
-    print("[%s]의 총 %s개의 트랜잭션이 검색되었습니다." %(dst, len(txInfoDst)))
+    print("[%s] 총 %s개의 트랜잭션이 검색되었습니다." %(dst, len(txInfoDst)))
 
     sortTxInfoSrt = sorted(txInfoSrt.items(), key = lambda x : len(x[1]), reverse = True)
     sortTxInfoDst = sorted(txInfoDst.items(), key = lambda x : len(x[1]), reverse = True)
@@ -167,7 +169,7 @@ def main():
     print("총 %d개의 트랜잭션이 검색되었습니다." %len(txInfoSrtToDst))
 
     print("")
-    print("(1) 주소의 개수가 많고, (2) 거래 금액이 높은 트랜잭션부터 내림차순으로 정렬합니다.")
+    print("(1) 주소의 개수가 많고, (2) 총 거래 금액이 높은 트랜잭션부터 내림차순으로 정렬합니다.")
 
     txInfoSrtToDst = sorted(txInfoSrtToDst.items(), key = lambda x : (x[1][0][1], x[1][0][2]), reverse = True)
 
@@ -188,13 +190,26 @@ def main():
     print("%d번째의 거래를 출력합니다." %index)
 
     infoSrtToDst = txInfoSrtToDst[index-1]
-    cur.execute("SELECT TxOut.addr, TxOut.btc FROM TxOut INNER JOIN TxIn on TxOut.tx = TxIn.tx where TxIn.tx = %d" %infoSrtToDst[1][0][0])
+    cur.execute("SELECT TxOut.addr, TxOut.btc FROM TxOut INNER JOIN TxIn on TxOut.tx = TxIn.tx where TxIn.ptx = %d and TxOut.tx = %d" %(infoSrtToDst[0], infoSrtToDst[1][0][0]))
     info = cur.fetchall()
 
     index = 1
     for element in info:
-        print("[%3d] [TxOut] %9d [addr] %9d [BTC] %10.10f" %(index, infoSrtToDst[0], element[0], element[1]))
+        print("[%3d] [TxOut] %9d [TxIn] %9d [addr] %9d [BTC] %10.10f" %(index, infoSrtToDst[0], infoSrtToDst[1][0][0], element[0], element[1]))
         index += 1
+    
+    firstDimGraph = Network(height="750px", width="100%")
+
+    srtGraph = str("[%s] Tx : %d" %(srt, infoSrtToDst[0]))
+    firstDimGraph.add_node(srtGraph, srtGraph, title = srtGraph)
+    for element in info:
+        dstGraph = str("[%s] Addr : %d" %(dst, element[0]))
+        w = str(element[1])
+        firstDimGraph.add_node(dstGraph, dstGraph, title = dstGraph)
+        firstDimGraph.add_edge(srtGraph, dstGraph, value = w)
+
+    firstDimGraph.show_buttons(filter_=['physics'])
+    firstDimGraph.show("firstTransaction.html")
 
 if __name__ == "__main__":
     main()
