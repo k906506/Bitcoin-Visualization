@@ -17,13 +17,15 @@ def main():
     conn = sqlite3.connect("dbv3-service.db")
     cur = conn.cursor()
 
-    print("탐색할 차수를 입력해주세요. ex) 1차 : 거래소 A -> 거래소 B / 2차 : 거래소 A -> 거래소 B -> 거래소 C")
+    print("탐색할 차수를 입력해주세요.")
+    print("ex) 1차 : 거래소 A -> 거래소 B / 2차 : 거래소 A -> 거래소 B -> 거래소 C")
     degree = int(input())
 
+    print("")
     userInputId = list()
     stringUserInput = list()
     for i in range(0, degree+1):
-        print("거래소 %s를 입력해주세요." %chr(97+i))
+        print("거래소 %s를 입력해주세요." %chr(65+i))
         userInput = input().rstrip()
         stringUserInput.append(userInput)
         userInput = getTagId(userInput)
@@ -56,9 +58,9 @@ def main():
     cur.close()
     conn.close()
 
-    ##########################################################
-    # 1. 위 과정이 종료되면 sumAddrInfo에 거래소 별 모든 주소가 저장. #
-    ##########################################################
+    ###########################################################
+    # 1. 위 과정이 종료되면 sumAddrInfo에 거래소별로 모든 addr이 저장. #
+    ###########################################################
 
     print("")
     print("트랜잭션 탐색을 진행합니다.")
@@ -66,17 +68,17 @@ def main():
     conn = sqlite3.connect("dbv3-core.db")
     cur = conn.cursor()
 
-    sumTxInfo = dict()
     newSortTxInfo = dict()
+    txInfoInTagId = dict()
 
-    for element in checkVisit:
-        element = False
+    for element in userInputId:
+        checkVisit[element] = False
 
-    i = 0
     for tagId in userInputId:
         if checkVisit[tagId]:
             continue
         else:
+            sumTxInfo = dict()
             visitTx = list()
             for addr in sumAddrInfo[tagId]:
                 cur.execute("SELECT TxOut.tx FROM TxOut where TxOut.addr = %d" %addr[0])
@@ -88,42 +90,70 @@ def main():
                     sumTxInfo[txInfo] = []
                     visitTx.append(txInfo)
                 sumTxInfo[txInfo].append(addr[0])
-
+            
             sortTxInfo = sorted(sumTxInfo.items(), key = lambda x : len(x[1]), reverse = True)
 
             index = 0
             for tx in sortTxInfo:
-                if len(tx[1]) == 1:
+                if len(tx[1]) == 10: # 탐색 속도 향상을 위해 주소의 개수가 10개 이하인 tx는 제외
                     break
                 index += 1
 
             sortTxInfo = sortTxInfo[:index+1]
             newSortTxInfo[tagId] = sortTxInfo
+            txInfoInTagId[tagId] = list(sumTxInfo.keys())
 
-            checkVisit[tagId] = True
+    print("트랜잭션 탐색을 종료되었습니다.")
 
-            print("%s의 트랜잭션 탐색을 완료했습니다." %stringUserInput[i])
-            i += 1
-            print(len(newSortTxInfo[tagId]))
+    ##################################################################################
+    # 2. 위 과정이 종료되면 newSortTxInfo에 거래소별로 [tx, (addr1, addr2, ...)] 형태로 저장. #
+    ##################################################################################
 
-    
+    txid = newSortTxInfo[tagId][0][0]
+    changeTx = list()
+    changeTx.append(txid)
 
-    ############################################################
-    #2. 위 과정이 종료되면 newSortTxInfo에는 거래소 별 tx - addr 저장. #
-    ############################################################
+    for i in range(degree):
+        visitTx = list()
+        ptx = dict()
 
-    firstDimGraph = Network(height="750px", width="100%")
+        cur.execute("SELECT TxIn.tx FROM TxIn where TxIn.ptx = %d order by TxIn.n desc" %(txid)) # ptx가 가장 많은 주소를 가진 tx.
+        try:
+            txInfo = cur.fetchall()
+        except:
+            continue
+        for tx in txInfo:
+            if tx[0] not in visitTx:
+                ptx[tx[0]] = 1
+                visitTx.append(tx[0])
+            ptx[tx[0]] += 1
+        
+        sortPtx = sorted(ptx.items(), key = lambda x : -x[1])
+        for element in sortPtx:
+            if element[0] in txInfoInTagId[tagId]:
+                txid = sortPtx[0][0]
+                changeTx.append(txid)
+                break
 
-    srtGraph = str("[%s] Tx : %d" %(srt, infoSrtToDst[0]))
-    firstDimGraph.add_node(srtGraph, srtGraph, title = srtGraph)
-    for element in info:
-        dstGraph = str("[%s] Addr : %d" %(dst, element[0]))
-        w = str(element[1])
-        firstDimGraph.add_node(dstGraph, dstGraph, title = dstGraph)
-        firstDimGraph.add_edge(srtGraph, dstGraph, value = w)
+    ##################################################
+    # 3. 위 과정이 종료되면 changeTx에 tx 이동 경로가 저장. #
+    ##################################################
 
-    firstDimGraph.show_buttons(filter_=['physics'])
-    firstDimGraph.show("firstTransaction.html")
+    SecondDimGraph = Network(height="750px", width="100%")
 
+    for i in range(degree):
+        srtGraph = str("[%s] Tx : %d" %(stringUserInput[i], changeTx[0]))
+        SecondDimGraph.add_node(srtGraph, srtGraph, title = srtGraph)
+    try:
+        for i in range(len(sumTxInfo[changeTx[degree]])):
+            dstGraph = str("[%s] Addr : %d" %(stringUserInput[len(stringUserInput)-1], sumTxInfo[changeTx[degree]][i]))
+            w = str(1)
+            SecondDimGraph.add_node(dstGraph, dstGraph, title = dstGraph)
+            SecondDimGraph.add_edge(srtGraph, dstGraph, value = w)
+
+        SecondDimGraph.show_buttons(filter_=['physics'])
+        SecondDimGraph.show("SecondTransaction.html")
+    except:
+        print("조회된 정보가 없습니다.")
 if __name__ == "__main__":
     main()
