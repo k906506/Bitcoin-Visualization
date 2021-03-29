@@ -1,0 +1,123 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.css" type="text/css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis-network.min.js"> </script>
+<center>
+<h1>None</h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+
+<style type="text/css">
+
+        #mynetwork {
+            width: 100%;
+            height: 750px;
+            background-color: #ffffff;
+            border: 1px solid lightgray;
+            position: relative;
+            float: left;
+        }
+
+        
+
+        
+        #config {
+            float: left;
+            width: 400px;
+            height: 600px;
+        }
+        
+
+        
+</style>
+
+</head>
+
+<body>
+<div id = "mynetwork"></div>
+
+
+<div id = "config"></div>
+
+<script type="text/javascript">
+
+    // initialize global variables.
+    var edges;
+    var nodes;
+    var network; 
+    var container;
+    var options, data;
+
+    
+    // This method is responsible for drawing the graph, returns the drawn network
+    function drawGraph() {
+        var container = document.getElementById('mynetwork');
+        
+        
+
+        // parsing and collecting nodes and edges from the python
+        nodes = new vis.DataSet([{"color": "#000000", "id": "[Tx] : 10000002", "label": "[Tx] : 10000002", "shape": "dot", "title": "[Tx] : 10000002"}, {"color": "#b4b4b4", "id": "[Tx] : 10000143", "label": "[Tx] : 10000143", "shape": "dot", "title": "[Tx] : 10000143"}, {"color": "#b4b4b4", "id": "[Tx] : 10004533", "label": "[Tx] : 10004533", "shape": "dot", "title": "[Tx] : 10004533"}, {"color": "#b4b4b4", "id": "[Tx] : 10006285", "label": "[Tx] : 10006285", "shape": "dot", "title": "[Tx] : 10006285"}, {"color": "#b4b4b4", "id": "[Tx] : 10007338", "label": "[Tx] : 10007338", "shape": "dot", "title": "[Tx] : 10007338"}, {"color": "#000000", "id": "[Addr] : 5028517", "label": "[Addr] : 5028517", "shape": "dot", "title": "[Addr] : 5028517"}, {"color": "#000000", "id": "[Addr] : 8391128", "label": "[Addr] : 8391128", "shape": "dot", "title": "[Addr] : 8391128"}]);
+        edges = new vis.DataSet([{"from": "[Tx] : 10000002", "to": "[Tx] : 10000143", "value": 0.11371988000000001}, {"from": "[Tx] : 10000143", "to": "[Tx] : 10004533", "value": 0.10825904}, {"from": "[Tx] : 10004533", "to": "[Tx] : 10006285", "value": 0.06263856}, {"from": "[Tx] : 10006285", "to": "[Tx] : 10007338", "value": 0.23057832}, {"from": "[Tx] : 10007338", "to": "[Addr] : 5028517", "value": 0.23}, {"from": "[Tx] : 10007338", "to": "[Addr] : 8391128", "value": 0.00057832}]);
+
+        // adding nodes and edges to the graph
+        data = {nodes: nodes, edges: edges};
+
+        var options = {
+    "configure": {
+        "enabled": true,
+        "filter": [
+            "physics"
+        ]
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": false,
+            "type": "continuous"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+        
+        
+
+        
+        // if this network requires displaying the configure window,
+        // put it in its div
+        options.configure["container"] = document.getElementById("config");
+        
+
+        network = new vis.Network(container, data, options);
+
+        
+
+
+        
+
+        return network;
+
+    }
+
+    drawGraph();
+
+</script>
+</body>
+</html>
