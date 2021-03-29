@@ -13,11 +13,13 @@ def returnTypeOfInput(input): # 입력한 해시값의 유효성 판단
 def returnIntFromHash(inputType, inputHash): # 입력한 해시값을 Int Index로 변환
     conn = sqlite3.connect("dbv3-index.db")
     cur = conn.cursor()
+
     if inputType == 0: #tx의 해시값
         cur.execute("SELECT TxID.id FROM TxID where TxID.txid = ?", (inputHash,))
     else: # addr의 해시값
         cur.execute("SELECT AddrID.id FROM AddrID where AddrID.addr = %s" %inputHash)
     result = cur.fetchone()[0]
+
     cur.close()
     conn.close()
     return result
@@ -25,11 +27,13 @@ def returnIntFromHash(inputType, inputHash): # 입력한 해시값을 Int Index�
 def returnTxFromIndex(inputType, infoIndex): # tx로 변환
     conn = sqlite3.connect("dbv3-core.db")
     cur = conn.cursor()
+
     if inputType == 0: # 이미 tx값이므로 변환 X
         result = infoIndex
     elif inputType == 1: # addr의 해시값
         cur.execute("SELECT TxOut.tx FROM TxOut where TxOut.addr = %d" %infoIndex)
         result = cur.fetchone()[0]
+
     cur.close()
     conn.close()
     return result
@@ -37,6 +41,7 @@ def returnTxFromIndex(inputType, infoIndex): # tx로 변환
 def returnTxAboutDegree(infoTx, degree): # 차수 직전 tx까지의 연결리스트 변환 (ptx까지만)
     conn = sqlite3.connect("dbv3-core.db")
     cur = conn.cursor()
+
     tx_list = []
     if degree == 1:
         tx_list.append(infoTx)
@@ -69,9 +74,9 @@ def returnBTCAboutTx(tx_list):
         cur.execute("SELECT sum(TxOut.btc) FROM TxOut where TxOut.tx = %d" %tx)
         btc = cur.fetchone()[0]
         btcAndTx_list.append((tx, btc))
+
     cur.close()
     conn.close()
-
     return btcAndTx_list
 
 def returnAddrFromTx(infoPtx): # Tx를 통해 Addr을 리턴
@@ -97,6 +102,9 @@ def returnAddrFromTx(infoPtx): # Tx를 통해 Addr을 리턴
         btcInTx_dict[result[i][0]][0] = infoHash
     
     btcInTx_dict = sorted(btcInTx_dict.items(), key = lambda x : x[1])
+
+    cur.close()
+    conn.close()
     return btcInTx_dict
 
 def returnBTCInTx(tx_list):
@@ -123,6 +131,8 @@ def returnBTCInTx(tx_list):
         infoHash = cur.fetchone()[0]
         btcInTx_dict[tx][0] = infoHash
 
+    cur.close()
+    conn.close()
     return btcInTx_dict
 
 def makeGraph(tx_list, hashAndBTCAddrInTx, degree):
