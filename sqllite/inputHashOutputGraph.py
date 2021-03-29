@@ -44,9 +44,18 @@ def returnTxAboutDegree(infoTx, degree): # 차수 직전 tx까지의 연결리�
         tx_list.append(infoTx)
         for _ in range(degree-1):
             cur.execute("SELECT TxIn.tx FROM TxIn where TxIn.ptx = %d" %infoTx)
-            tx = cur.fetchone()[0]
-            tx_list.append(tx)
-            infoTx = tx
+            tx_info = cur.fetchall()
+
+            mid_list = []
+            for tx in tx_info:
+                cur.execute("SELECT sum(TxOut.btc) FROM TxOut where TxOut.tx = %d" %tx[0])
+                btc = cur.fetchone()[0]
+                mid_list.append((tx[0], btc))
+
+            mid_list = sorted(mid_list, key = lambda x : -x[1])
+            infoTx = mid_list[0][0]
+            tx_list.append(mid_list[0][0])
+
     cur.close()
     conn.close()
     return tx_list
@@ -68,11 +77,27 @@ def returnBTCAboutTx(tx_list):
 def returnAddrFromTx(infoPtx): # Tx를 통해 Addr을 리턴
     conn = sqlite3.connect("dbv3-core.db")
     cur = conn.cursor()
+
+    btcInTx_dict = dict()
     cur.execute("SELECT TxOut.addr, TxOut.btc FROM TxOut where TxOut.tx = %d order by TxOut.btc desc" %infoPtx) # Addr을 btc 금액값에 따라 내림차순으로 정렬
     result = cur.fetchall()
+
+    for i in range(len(result)):
+        btcInTx_dict[result[i][0]] = [0, result[i][1]]
+    
     cur.close()
     conn.close()
-    return result
+
+    conn = sqlite3.connect("dbv3-index.db")
+    cur = conn.cursor()
+
+    for i in range(len(result)):
+        cur.execute("SELECT AddrID.addr FROM AddrID where AddrID.id = %d" %result[i][0])
+        infoHash = cur.fetchone()[0]
+        btcInTx_dict[result[i][0]][0] = infoHash
+    
+    btcInTx_dict = sorted(btcInTx_dict.items(), key = lambda x : x[1])
+    return btcInTx_dict
 
 def returnBTCInTx(tx_list):
     conn = sqlite3.connect("dbv3-core.db")
@@ -100,7 +125,7 @@ def returnBTCInTx(tx_list):
 
     return btcInTx_dict
 
-def makeGraph(tx_list, infoAddrAndBtc, degree):
+def makeGraph(tx_list, hashAndBTCAddrInTx, degree):
     graph = Network(height="750px", width="100%")
 
     if degree == 1:
@@ -111,9 +136,9 @@ def makeGraph(tx_list, infoAddrAndBtc, degree):
             graph.add_edge(tx_list[i], tx_list[i+1], value = 1)
 
         ptx = str(tx_list[len(tx_list)-1])
-        for addr in infoAddrAndBtc:
+        for addr in hashAndBTCAddrInTx:
             dstGraph = str(addr[0])
-            btc = addr[1]
+            btc = addr[1][1]
             graph.add_node(dstGraph, dstGraph, title = str(dstGraph))
             graph.add_edge(ptx, dstGraph, value = btc)
     
@@ -131,9 +156,9 @@ def makeGraph(tx_list, infoAddrAndBtc, degree):
             graph.add_edge(mid_ptx, mid_tx, value = tx_list[i+1][1])
     
         ptx = str("[Tx] : %s" %tx_list[len(tx_list)-1][0])
-        for addr in infoAddrAndBtc:
+        for addr in hashAndBTCAddrInTx:
             dstGraph = str("[Addr] : %s" %addr[0])
-            btc = addr[1]
+            btc = addr[1][1]
             graph.add_node(dstGraph, dstGraph, title = dstGraph, color = '#000000')
             graph.add_edge(ptx, dstGraph, value = btc)
 
@@ -157,20 +182,30 @@ def main():
     infoIndex = returnIntFromHash(inputType, InputHash) # Int Index로 변환
     infoTx = returnTxFromIndex(inputType, infoIndex) # tx로 변환
     tx_list = returnTxAboutDegree(infoTx, degree) # ptx까지 리스트에 저장
-    infoPtx = tx_list[len(tx_list)-1] # ptx 저장`
-    infoAddrAndBtc = returnAddrFromTx(infoPtx) # ptx로 addr 저장
-    btcInTx_dict = returnBTCInTx(tx_list)
+    hashAndBTCInTx = returnBTCInTx(tx_list)
 
+    print("")
+    print("트랜잭션이 2개 이상인 경우 BTC 합이 가장 큰 트랜잭션으로 연결됩니다.")
     print("")
     print("트랜잭션별 해시값과 거래대금은 아래와 같습니다.")
     for i in range(len(tx_list)):
-        print("[%d] [Tx] : %d [Hash] : %s [BTC] : %d" %(i+1, tx_list[i], btcInTx_dict[tx_list[i]][0], btcInTx_dict[tx_list[i]][1]))
+        print("[%2d] [Tx] : %d [Hash] : %s [BTC] : %lf" %(i+1, tx_list[i], hashAndBTCInTx[tx_list[i]][0], hashAndBTCInTx[tx_list[i]][1]))
+
+    print("")
+    print("[Tx]%d와 연결된 Addr의 주소와 BTC는 아래과 같습니다." %tx_list[len(tx_list)-1])
+
+    infoPtx = tx_list[len(tx_list)-1] # ptx 저장`
+    hashAndBTCAddrInTx = returnAddrFromTx(infoPtx)
+    # infoAddrAndBtc = returnAddrFromTx(infoPtx) ptx로 addr 저장
+
+    for i in range(len(hashAndBTCAddrInTx)):
+        print("[%2d] [Addr] : %d [Hash] : %s [BTC] : %lf" %(i+1, hashAndBTCAddrInTx[i][0], hashAndBTCAddrInTx[i][1][0], hashAndBTCAddrInTx[i][1][1]))
 
     if degree == 1:
-        makeGraph(tx_list, infoAddrAndBtc, degree) # 그래프로 변환
+        makeGraph(tx_list, hashAndBTCAddrInTx, degree) # 그래프로 변환
     else:
         btcAndTx_list = returnBTCAboutTx(tx_list)
-        makeGraph(btcAndTx_list, infoAddrAndBtc, degree)
+        makeGraph(btcAndTx_list, hashAndBTCAddrInTx, degree)
 
 if __name__ == "__main__":
     main()
