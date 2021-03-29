@@ -152,7 +152,7 @@ def main():
             SecondDimGraph.add_edge(srtGraph, dstGraph, value = w)
 
         SecondDimGraph.show_buttons(filter_=['physics'])
-        SecondDimGraph.show("SecondTransaction.html")
+        SecondDimGraph.show("secondTransaction.html")
     except:
         print("조회된 정보가 없습니다.")
 if __name__ == "__main__":
