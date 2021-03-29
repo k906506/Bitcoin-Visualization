@@ -1,3 +1,32 @@
+#inputHashOutputGraph.py INPUT, OUTPUT#
+
+```python
+해시값을 입력해주세요.
+a7d7035bcb69ce61a295aa45b7abbbe5fd39c2f334e4b809ec7730d825546c47
+
+차수를 입력해주세요.
+10
+
+트랜잭션이 2개 이상인 경우 BTC 합이 가장 큰 트랜잭션으로 연결됩니다.
+
+트랜잭션별 해시값과 거래대금은 아래와 같습니다.
+[ 1] [Tx] : 10000002 [Hash] : a7d7035bcb69ce61a295aa45b7abbbe5fd39c2f334e4b809ec7730d825546c47 [BTC] : 0.534500
+[ 2] [Tx] : 10000210 [Hash] : de8747aa87ab0d60e66cbf10219e11e098b880a3a4f54f94b3f4eeaed71caaa5 [BTC] : 0.462280
+[ 3] [Tx] : 10000924 [Hash] : 32f9f617064c9c6e455f46401c9829b6de0a7bd2730b6c1b3c45969bd1637b9c [BTC] : 0.810451
+[ 4] [Tx] : 10022940 [Hash] : 2d623c7a79b8400fbbd2fbf8aa128f3663922a150e5409a327218d4e210152ac [BTC] : 0.819451
+[ 5] [Tx] : 10026417 [Hash] : a52e0d20e0ca02900fa610096f3618ae35463b14dc7c181f61c06f45ca5ab09d [BTC] : 0.832250
+[ 6] [Tx] : 10028655 [Hash] : 79add48f53471bd283e4ab342d302a6f74ce4c31ab7d1da04a9d49a4e9a1230a [BTC] : 1.309082
+[ 7] [Tx] : 10029971 [Hash] : 293c2eb7299ccd31eb4102d389fd687f675b1055ad2ceac4a3b3ec8018f33ffe [BTC] : 1.000924
+[ 8] [Tx] : 10029972 [Hash] : 2fcc99dab65e3990d1fc175763ea82f667840b76331ac9f40132887007498f6a [BTC] : 26.335296
+[ 9] [Tx] : 10036732 [Hash] : 21ab262cd947c86d12ff0649b696c1b3e2e2c91c90bb550ee7b5fdd26c2e60d4 [BTC] : 27.805113
+[10] [Tx] : 10103957 [Hash] : c081bcd44e64867a1f2a1d7adaeaa10ced77814326ceb37eca5466a36bb4fcfb [BTC] : 284.350771
+
+[Tx]10103957와 연결된 Addr의 주소와 BTC는 아래과 같습니다.
+[ 1] [Addr] : 6777005 [Hash] : 12RHj4KivHcT41Qa14fdrhAffCVu23fkaK [BTC] : 282.507740
+[ 2] [Addr] : 8059548 [Hash] : 1QLXKVcUh7mCzqYRso2wqPzqjg6fC1QMiY [BTC] : 1.843031
+```
+![image](https://user-images.githubusercontent.com/33795856/112845467-daecf080-90df-11eb-9172-bc750b7a8d73.png)
+
 #firstTransaction.py INPUT, OUTPUT#
 
 ``` python
