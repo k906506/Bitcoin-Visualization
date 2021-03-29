@@ -60,7 +60,9 @@ def returnBTCAboutTx(tx_list):
         cur.execute("SELECT sum(TxOut.btc) FROM TxOut where TxOut.tx = %d" %tx)
         btc = cur.fetchone()[0]
         btcAndTx_list.append((tx, btc))
-    
+    cur.close()
+    conn.close()
+
     return btcAndTx_list
 
 def returnAddrFromTx(infoPtx): # Tx를 통해 Addr을 리턴
@@ -72,6 +74,31 @@ def returnAddrFromTx(infoPtx): # Tx를 통해 Addr을 리턴
     conn.close()
     return result
 
+def returnBTCInTx(tx_list):
+    conn = sqlite3.connect("dbv3-core.db")
+    cur = conn.cursor()
+
+    btcInTx_dict = dict()
+    for tx in tx_list:
+        btcInTx_dict[tx] = [0, 0]
+
+    for tx in tx_list:
+        cur.execute("SELECT sum(TxOut.btc) FROM TxOut where TxOut.tx = %d" %tx)
+        btc = cur.fetchone()[0]
+        btcInTx_dict[tx][1] = btc
+
+    cur.close()
+    conn.close()
+
+    conn = sqlite3.connect("dbv3-index.db")
+    cur = conn.cursor()
+
+    for tx in tx_list:
+        cur.execute("SELECT TxID.txid FROM TxID where TxID.id = %d" %tx)
+        infoHash = cur.fetchone()[0]
+        btcInTx_dict[tx][0] = infoHash
+
+    return btcInTx_dict
 
 def makeGraph(tx_list, infoAddrAndBtc, degree):
     graph = Network(height="750px", width="100%")
@@ -117,20 +144,28 @@ def makeGraph(tx_list, infoAddrAndBtc, degree):
 def main():
     print("해시값을 입력해주세요.")
     InputHash = input().rstrip()
-    print("차수를 입력해주세요.")
-    degree = int(input())
-
     inputType = returnTypeOfInput(InputHash)
     while inputType == -1:
         print("해시값이 잘못되었습니다. 정상적인 값을 입력해주세요.")
         InputHash = input().rstrip()
         inputType = returnTypeOfInput(InputHash)
     
+    print("")
+    print("차수를 입력해주세요.")
+    degree = int(input())
+    
     infoIndex = returnIntFromHash(inputType, InputHash) # Int Index로 변환
     infoTx = returnTxFromIndex(inputType, infoIndex) # tx로 변환
     tx_list = returnTxAboutDegree(infoTx, degree) # ptx까지 리스트에 저장
     infoPtx = tx_list[len(tx_list)-1] # ptx 저장`
     infoAddrAndBtc = returnAddrFromTx(infoPtx) # ptx로 addr 저장
+    btcInTx_dict = returnBTCInTx(tx_list)
+
+    print("")
+    print("트랜잭션별 해시값과 거래대금은 아래와 같습니다.")
+    for i in range(len(tx_list)):
+        print("[%d] [Tx] : %d [Hash] : %s [BTC] : %d" %(i+1, tx_list[i], btcInTx_dict[tx_list[i]][0], btcInTx_dict[tx_list[i]][1]))
+
     if degree == 1:
         makeGraph(tx_list, infoAddrAndBtc, degree) # 그래프로 변환
     else:
