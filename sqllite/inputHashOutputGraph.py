@@ -5,7 +5,7 @@ import networkx as nx
 def returnTypeOfInput(input): # 입력한 해시값의 유효성 판단
     if len(input) == 64:
         return 0
-    elif len(input) == 42:
+    elif len(input) == 34:
         return 1
     else:
         return -1
@@ -17,7 +17,7 @@ def returnIntFromHash(inputType, inputHash): # 입력한 해시값을 Int Index�
     if inputType == 0: #tx의 해시값
         cur.execute("SELECT TxID.id FROM TxID where TxID.txid = ?", (inputHash,))
     else: # addr의 해시값
-        cur.execute("SELECT AddrID.id FROM AddrID where AddrID.addr = %s" %inputHash)
+        cur.execute("SELECT AddrID.id FROM AddrID where AddrID.addr = ?", (inputHash,))
     result = cur.fetchone()[0]
 
     cur.close()
@@ -140,7 +140,7 @@ def makeGraph(tx_list, hashAndBTCAddrInTx, degree):
 
     if degree == 1:
         for tx in tx_list:
-            graph.add_node(tx, tx, title = str(tx))
+            graph.add_node(tx, tx, title = str(tx), color = '#0dff00')
 
         for i in range(len(tx_list)-1):
             graph.add_edge(tx_list[i], tx_list[i+1], value = 1)
@@ -154,7 +154,7 @@ def makeGraph(tx_list, hashAndBTCAddrInTx, degree):
     
     else:
         src_tx = str("[Tx] : %s" %tx_list[0][0])
-        graph.add_node(src_tx, src_tx, title = src_tx, color = '#000000')
+        graph.add_node(src_tx, src_tx, title = src_tx, color = '#0dff00')
 
         for i in range(1, len(tx_list)):
             mid_tx = str("[Tx] : %s" %tx_list[i][0])
@@ -169,7 +169,7 @@ def makeGraph(tx_list, hashAndBTCAddrInTx, degree):
         for addr in hashAndBTCAddrInTx:
             dstGraph = str("[Addr] : %s" %addr[0])
             btc = addr[1][1]
-            graph.add_node(dstGraph, dstGraph, title = dstGraph, color = '#000000')
+            graph.add_node(dstGraph, dstGraph, title = dstGraph, color = '#00ffb3')
             graph.add_edge(ptx, dstGraph, value = btc)
 
 
