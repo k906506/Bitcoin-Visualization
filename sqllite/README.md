@@ -1,3 +1,12 @@
+#visualTransactionForType.py INPUT, OUTPUT#
+
+```python
+https://www.walletexplorer.com/ < 해당 사이트에서 addr값 찾아서 입력
+거래소 / 부정거래 구별 가능
+```
+![image](https://user-images.githubusercontent.com/33795856/116235415-cc562f80-a798-11eb-98ab-dcdf7360b2ca.png)
+
+
 #inputHashOutputGraph.py INPUT, OUTPUT#
 
 ```python
@@ -26,6 +35,7 @@ a7d7035bcb69ce61a295aa45b7abbbe5fd39c2f334e4b809ec7730d825546c47
 [ 2] [Addr] : 8059548 [Hash] : 1QLXKVcUh7mCzqYRso2wqPzqjg6fC1QMiY [BTC] : 1.843031
 ```
 ![image](https://user-images.githubusercontent.com/33795856/112846349-ed1b5e80-90e0-11eb-939c-94581cc52df7.png)
+
 
 #firstTransaction.py INPUT, OUTPUT#
 
