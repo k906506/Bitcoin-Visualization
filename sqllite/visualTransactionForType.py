@@ -67,20 +67,21 @@ def main():
 
     ans = sorted(count.items(), key = lambda x : x[1], reverse=True)
 
+    print("")
+    print("가중치 입력 : ", end = "")
+    max_node = int(input()) # 가중치
     for i in range(len(ans)): # 가중치까지의 초록색 노드 개수
-        if ans[i][1] <= 30:
+        if ans[i][1] <= max_node:
             index = i+1
             break
 
-    print("초록 노드 총 개수 : %d" %countGreen)
-    print("파란 노드 총 개수 : %d" %countBlue)
-    print("1대1 연결 개수 : %d" %(countGreen-index))
-    print("초록색 노드당 파란색 노드 개수 : %f" %((countBlue-(countGreen-index))/(countGreen-index)))
+    print("직접 연결노드 총 개수 : %d" %countGreen)
+    print("간접 연결노드 총 개수 : %d" %countBlue)
+    print("[가중치 %d] 1개의 직접 연결노드에 연결된 간접 연결노드 평균 개수 : %f" %(max_node, (countBlue-(countGreen-index))/(countGreen-index)))
 
-    # G.show_buttons(filter_=['physics'])
-    # G.show("visualTransactionForType.html")
+    G.show_buttons(filter_=['physics'])
+    G.show("visualTransactionForType.html")
 
-    # print(countGreen, countBlue, countBlue/countGreen, countGreen/countBlue)
 
 if __name__ == "__main__":
     main()
