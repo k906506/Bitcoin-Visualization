@@ -17,8 +17,7 @@ https://github.com/k906506/Bitcoin-Visualization/blob/master/sqllite/visualTrans
 <H2> 발표 논문 </H2>
 
 비트코인 거래 과정 시각화를 통한 거래 유형 판별
-
-Identifying transaction types through visualization of Bitcoin transaction processes.
+(Identifying transaction types through visualization of Bitcoin transaction processes)
 
 <H2> 발표 영상 </H2>
 https://www.youtube.com/watch?v=y8vMVxK9kM4
