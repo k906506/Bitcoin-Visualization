@@ -14,7 +14,7 @@
 <H2> 소스 코드 </H2>
 https://github.com/k906506/Bitcoin-Visualization/blob/master/sqllite/visualTransactionForType.py
 
-<H2> 발표 논문 </H2>
+<H2> 발표 논문 </H2> 
 
 비트코인 거래 과정 시각화를 통한 거래 유형 판별
 
