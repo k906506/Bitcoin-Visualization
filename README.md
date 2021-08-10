@@ -12,7 +12,7 @@
 충남대학교 컴퓨터공학과 이영석 교수님의 지도하에 3개월간 학부 연구생을 진행하였음. 비트코인 거래 과정 시각화와 필요성에 대해 연구하였음. 시각화를 통하여 거래 유형 판별이 가능함을 보였고 이를 토대로 논문을 작성하였음. 이후 한국정보과학회(KCC 2021)에 논문을 제출하고 참가하였음.
 
 <H2> 소스 코드 </H2>
-https://github.com/k906506/Bitcoin-Visualization/blob/master/sqllite/visualTransactionForType.py
+https://github.com/k906506/Bitcoin-Visualization/blob/master/sqllite
 
 <H2> 발표 논문 </H2> 
 
