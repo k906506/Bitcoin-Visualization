@@ -18,7 +18,7 @@ https://github.com/k906506/Bitcoin-Visualization/blob/master/sqllite
 
 비트코인 거래 과정 시각화를 통한 거래 유형 판별
 
-(Identifying transaction types through visualization of Bitcoin transaction processes)
+[Identifying transaction types through visualization of Bitcoin transaction processes](https://www.dbpia.co.kr/journal/articleDetail?nodeId=NODE10583539)
 
 <H2> 발표 영상 </H2>
 https://www.youtube.com/watch?v=y8vMVxK9kM4
